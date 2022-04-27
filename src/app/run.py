@@ -80,7 +80,6 @@ def validate():
     attributes = models[category_id]
     results = []
     for attribute in attributes.items():
-        print(attribute[0])
         median = get_attribute_median(f'{category_id}_{attribute[0]}_low')
         result = None
         if (weight or weight == 0) and attribute[0] == 'weight':
@@ -98,7 +97,6 @@ def validate():
         elif screen_size and attribute[0] == 'screen_size':
             result = get_result_for(screen_size, median, attribute[1], category_id, 'screen_size')
         elif camera_pixel and attribute[0] == 'camera_pixel_max':
-            print('foo')
             result = get_result_for(camera_pixel, median, attribute[1], category_id, 'camera_pixel_max')
 
         if result:
