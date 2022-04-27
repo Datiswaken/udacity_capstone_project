@@ -39,7 +39,7 @@ To get started with the project run the following command in the root directory:
 1. `pip install -r requirements.txt`
 2. `pip install --editable .`
 3. `python src/data/preprocessing.py numeric_attributes_raw.csv src/ProductData.db`
-4. `python src/model/train_classifiers.py src/ProductData.db src/model/kde_models/`
+4. `python src/model/generate_kde_models.py src/ProductData.db src/model/kde_models/`
 5. `python src/app/run.py`
 
 Go to http://127.0.0.1:3001/
@@ -135,6 +135,14 @@ The following steps have been taken to clean the data:
 - Removal of invalid items (certain attributes are missing that are required by the marketplace)
 - Removal of blacklisted items
 - Removal of possible duplicate items
+
+Note: Though there are NaN values in each attribute I did decide to not include this stepi n the cleaning process.
+The reasoning is a follows:
+Any replacement, e.g. with mean, average, max, min etc. would change the result of the calculated PDF, hence I would
+introduce a bias. Removing those rows would also not make sense, as a row might have one attribute missing, but another
+attribute might be available. Because every attribute in each category has its own PDF, removal of the whole row would
+therefore remove valid data points of other attributes.\
+Instead, when the PDFs are generated, all NaN values for the respective attribute get removed.
 
 ## Evaluation
 This project used an unsupervised machine learning approach and no labeled data was available. For that reason it is not
