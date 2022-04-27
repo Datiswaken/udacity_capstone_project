@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='master.css') }}">
+    <title>Kaufland Product Data Import</title>
+    <script>$SCRIPT_ROOT = {{ request.script_root|tojson }};</script>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark navbar-fixed-top">
+    <a class="navbar-brand" href="/">Kaufland Product Data Import</a>
+</nav>
+
+<div class="container">
+    <h1 id="headline">Product Data Import</h1>
+    <div id="unusual_value_hint" hidden>
+        <p>The following attribute values are unusual. Are you sure they are correct? Please keep the right unit in mind.</p>
+        <ul id="unusual_value_list">
+        </ul>
+    </div>
+
+    <div id="all_data_valid" hidden>
+        <p>All attribute values are valid.</p>
+    </div>
+
+    <form action="{{ url_for('import_data') }}" method="POST">
+        <div id="category_dropdown_wrapper" class="form-group">
+            <label for="cat_dropdown">Product Category</label>
+            <select id="cat_dropdown" class="category_dropdown form-select form-control" name="category_id">
+                <option value="46051" selected>Laptop</option>
+                <option value="38371">Smartphone</option>
+                <option value="5651">Desk</option>
+                <option value="34501">Television</option>
+                <option value="46071">Tablet</option>
+                <option value="36731">Reflex Camera</option>
+            </select>
+        </div>
+
+        <div class="form-group product_title_input">
+            <label for="product_title">Product Title</label>
+            <input type="text" class="form-control" id="product_title" name="title" placeholder="Product Title" value="{{data.title}}">
+        </div>
+
+        <div class="form-group weight_input">
+            <label for="product_weight">Weight</label>
+            <input type="number" step="any" class="form-control" id="product_weight" name="weight" placeholder="Weight" value="{{data.weight}}">
+        </div>
+        <div class="form-group width_input">
+            <label for="product_width">Width</label>
+            <input type="number" step="any" class="form-control" id="product_width" name="width" placeholder="Width" value="{{data.width}}">
+        </div>
+        <div class="form-group length_input">
+            <label for="product_length">Length</label>
+            <input type="number" step="any" class="form-control" id="product_length" name="length" placeholder="Length" value="{{data.length}}">
+        </div>
+        <div class="form-group depth_input">
+            <label for="product_depth">Depth</label>
+            <input type="number" step="any" class="form-control" id="product_depth" name="depth" placeholder="Depth" value="{{data.depth}}">
+        </div>
+        <div class="form-group height_input">
+            <label for="product_height">Height</label>
+            <input type="number" step="any" class="form-control" id="product_height" name="height" placeholder="Height" value="{{data.height}}">
+        </div>
+        <div class="form-group storage_size_input">
+            <label for="product_storage_size">Storage Size</label>
+            <input type="number" step="any" class="form-control" id="product_storage_size" name="storage_size" placeholder="Storage Size" value="{{data.storage_size}}">
+        </div>
+        <div class="form-group screen_size_input">
+            <label for="product_screen_size">Screen Size</label>
+            <input type="number" step="any" class="form-control" id="product_screen_size" name="screen_size" placeholder="Screen Size" value="{{data.screen_size}}">
+        </div>
+        <div class="form-group camera_pixel_input">
+            <label for="product_camera_pixel">Camera Pixel</label>
+            <input type="number" step="any" class="form-control" id="product_camera_pixel" name="camera_pixel" placeholder="Camera Pixel" value="{{data.camera_pixel}}">
+        </div>
+
+        <button id="data-validation-btn" class="btn btn-secondary">Validate Data</button>
+        <button type="submit" id="submit_btn" class="btn btn-primary" disabled>Submit</button>
+    </form>
+
+    {% block processed %}
+    {% endblock %}
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='index.js') }}"></script>
+</body>
+</html>

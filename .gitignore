@@ -1,0 +1,8 @@
+env/
+
+Capstone Project Data Analysis.ipynb
+.ipynb_checkpoints
+
+.idea
+*.egg-info/
+__pycache__/
