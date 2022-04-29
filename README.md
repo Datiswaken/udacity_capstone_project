@@ -15,60 +15,29 @@ The project covers the fundamental steps of a data science project:
 - Model evaluation
 - Usage of the model in a web application
 
-## Project Goal
+## Problem Statement
 The main goal was to develop a system to automatically detect unusual values of numerical attributes 
 for certain product categories. The data is provided by the sellers selling on the marketplace. However,
 there are numerous reasons, why this approach can lead to data being not correctly interpreted by the
 system. For example the data could be entered with the wrong unit in mind, so the interpreted 
-value might be off by several magnitudes from the actual value.
+value might be off by several magnitudes from the actual value.\
+Poor product data leads to a bad UX for customers of the marketplace. Search filters cannot work properly
+if the underlying data is not correct.\
+It is therefore in the interest of the marketplace to have an as good as possible data quality.
 
 Assuming that the majority of data is entered correctly, those wrong values should appear relatively 
 rarely compared to valid values and therefore an outlier detection algorithm should be able to identify
 those values.
 
-## Project Structure
-The project contains a `src` folder which in turn contains three other folders:
-- `app`: Contains code related to the web app
-- `data`: Contains a script for preprocessing
-- `model`: Contains a script for training the model
+## Metrics
+This project used an unsupervised machine learning approach and no labeled data was available. 
+For that reason it is not easily possible to determine objective metrics, like accuracy or precision,
+for how good the model(s) perform.\
+Rather, a more heuristic approach needs to be taken to evaluate the results. Based on domain knowledge,
+a value can be given as an input to the model and the response (outlier vs. no outlier) can be interpreted.
+For example a laptop with a weight of 10 kg should be marked as an outlier, while a 2 kg laptop should not.
 
-Furthermore, the raw dataset (`numeric_attributes_raw.csv`) itself can be found in the root folder
-
-## How to Run
-To get started with the project run the following command in the root directory:
-1. `pip install -r requirements.txt`
-2. `pip install --editable .`
-3. `python src/data/preprocessing.py numeric_attributes_raw.csv src/ProductData.db`
-4. `python src/model/generate_kde_models.py src/ProductData.db src/model/kde_models/`
-5. `python src/app/run.py`
-
-Go to http://127.0.0.1:3001/
-
-Note: You need to be within a Python virtual environment:
-- Run `python -m venv env` in the root folder
-- Afterwards run `source env/bin/activate`
-
-## Libraries
-Libraries used for the web application can be found in `requirements.txt`.\
-For the data analysis part the following libraries where used:
-- pandas
-- numpy
-- matplotlib
-- sklearn
-- scipy
-
-## Web Application
-The implemented web application simulates a very primitive product data import interface. A seller can decide for which
-product category they would like to add an item, e.g. laptops, cell phones, etc. The seller then adds a product title
-as well as necessary numerical attributes.\
-Before a data can be submitted the data validation must be triggered. This is where the backend makes use of the 
-developed outlier detection model to decide, whether the input values for the numerical attributes seem too high or too
-low. If so, the seller is informed that they should re-assure that everything is correct.\
-Even if the system marks a value as an outlier, it does not prevent the seller from submitting the data. Reasoning is
-that there are valid products for which certain attributes are lying outside the normal range. So the system might
-mention false positives to the seller.
-
-## Data Analysis
+## Data Exploration & Data Visualization
 ### Dataset
 The raw dataset used for this project is about 29 MB and contains 245,613 rows and 13 columns.
 The columns are as follows:
@@ -86,7 +55,7 @@ The columns are as follows:
 - `storage_size`: Storage Size of a data storage device
 - `camera_pixel_max`: Camera pixels
 
-### Data Exploration
+### Data Analysis
 
 High level statistics of each numerical attribute is shown in the following image:
 
@@ -130,7 +99,7 @@ Note: Because the products do not have a lot of different numerical attributes, 
 common machine learning algorithms, which can be used for multidimensional data (e.g. DBSCAN). For one-dimensional data
 using KDE seemed to be more suitable.
 
-### Data Cleaning
+## Data Preprocessing
 The following steps have been taken to clean the data:
 - Removal of invalid items (certain attributes are missing that are required by the marketplace)
 - Removal of blacklisted items
@@ -144,10 +113,77 @@ attribute might be available. Because every attribute in each category has its o
 therefore remove valid data points of other attributes.\
 Instead, when the PDFs are generated, all NaN values for the respective attribute get removed.
 
-## Evaluation
-This project used an unsupervised machine learning approach and no labeled data was available. For that reason it is not
-easily possible to determine objective metrics, like accuracy or precision, for how good the model(s) perform.\
-Rather, a more heuristic approach can be taken to evaluate the results.
+
+## Implementation 
+Python 3.8 together with Javascript, HTML & CSS has been used for this project.\
+The project contains a `src` folder which in turn contains three other folders:
+- `app`: Contains code related to the web app
+- `data`: Contains a script for preprocessing
+- `model`: Contains a script for training the model
+
+`app` contains the following files:
+- `static/index.js`: A javascript file for making use of jquery
+- `static/master.css`: A css file for the index.html page
+- `static/processed.css`: A css file for the processed.html page
+- `templates/index.html`: The main HTML file
+- `templates/processed.html`: HTML file shown after product data has been submitted
+- `run.py`: Entrypoint for starting the application. It starts a local web server using flask
+with two endpoints
+
+`data` contains the following files:
+- `numeric_product_data_attributes.py`: Contains a python dictionary which gives information about 
+the attribute each category uses. This is getting used by other files.
+- `preprocessing.py`: Entrypoint to start the preprocessing process
+
+`model` contains the following files:
+- `generate_kde_models.py`: Entrypoint to generate the KDE models. For each category and each attribute
+within that category two models are created. One for values above the median, and one below it
+- `kde_models/`: An initially empty folder which will later be filled with the generated models
+
+Furthermore, the raw dataset (`numeric_attributes_raw.csv`) itself can be found in the root folder
+
+### How to Run
+To get started with the project run the following command in the root directory:
+1. `pip install -r requirements.txt`
+2. `pip install --editable .`
+3. `python src/data/preprocessing.py numeric_attributes_raw.csv src/ProductData.db`
+4. `python src/model/generate_kde_models.py src/ProductData.db src/model/kde_models/`
+5. `python src/app/run.py`
+
+Go to http://127.0.0.1:3001/
+
+Note: You need to be within a Python virtual environment:
+- Run `python -m venv env` in the root folder
+- Afterwards run `source env/bin/activate`
+
+### Libraries
+Libraries used for the web application can be found in `requirements.txt`.\
+For the data analysis part the following libraries where used:
+- pandas
+- numpy
+- matplotlib
+- sklearn
+- scipy
+
+### Web Application
+The implemented web application simulates a very primitive product data import interface. A seller can decide for which
+product category they would like to add an item, e.g. laptops, cell phones, etc. The seller then adds a product title
+as well as necessary numerical attributes.\
+Before a data can be submitted the data validation must be triggered. This is where the backend makes use of the 
+developed outlier detection model to decide, whether the input values for the numerical attributes seem too high or too
+low. If so, the seller is informed that they should re-assure that everything is correct.\
+Even if the system marks a value as an outlier, it does not prevent the seller from submitting the data. Reasoning is
+that there are valid products for which certain attributes are lying outside the normal range. So the system might
+mention false positives to the seller.
+
+## Refinement
+While the initial idea was to use a clustering algorithm it became quite early on clear that for 
+one-dimensional data the Kernel Density Estimation was a better fit. So after reading about different
+clustering approaches I relatively fast switched to read myself into the topic of KDE.
+
+## Model Evaluation and Validation
+As explained in the Models Section, for this project I did not use any objective metrics to evaluate
+the model but decided to go with a manual, domain knowledge based approach.
 
 During the data analysis part I have looked at the plotted data for some attributes. The following shows the 
 weight for laptops above the mean (for better visual representation). As can be seen, the outliers (red) are all values 
@@ -170,7 +206,13 @@ needs a potentially different value I have decided to use the
 [gaussian_kde class](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html) of the scipy
 package. This class includes automatic bandwidth selection algorithms, like Silverman's rule of thumb.
 
-## Conclusion
+## Justification
+Since it was quite early clear that a clustering approach, which is commonly used for multidimensional
+data, is not needed here and that KDE would be a suitable approach, I did not spend much time at checking
+the outcome of another approach.
+
+
+## Reflection
 Online marketplaces, like Kaufland.de, are sitting on lots of data which they can potentially make use of. However,
 the data quality is an important factor. Especially with data input by external parties, e.g. sellers, the quality often
 times is not optimal, which prevents an easy usage of it. For that reason it is helpful to have systems in place which
@@ -179,6 +221,11 @@ In the case of numerical attributes those wrong data points can be detected by o
 Kernel Density Estimation is such a suitable approach to detect outliers in one-dimensional data which is not following a
 normal distribution. With the help of KDE it is possible to create a probability density function without much prior 
 knowledge about that underlying data.
+
+Something that I learned during this project is that to solve a problem, it is not always necessary to make
+use of the most modern, fancy machine learning techniques out there. Sometimes very common statistical
+approaches can solve the problem equally well with less effort. For normal distributed data even a simple
+approach like calculation of a Z-score might be sufficient.
 
 ### Possible Improvement
 To determine whether a data point is considered as an outlier a threshold is required which defines the limit for 
