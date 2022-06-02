@@ -30,12 +30,12 @@ rarely compared to valid values and therefore an outlier detection algorithm sho
 those values.
 
 ## Metrics
-This project used an unsupervised machine learning approach and no labeled data was available. 
-For that reason it is not easily possible to determine objective metrics, like accuracy or precision,
-for how good the model(s) perform.\
-Rather, a more heuristic approach needs to be taken to evaluate the results. Based on domain knowledge,
-a value can be given as an input to the model and the response (outlier vs. no outlier) can be interpreted.
-For example a laptop with a weight of 10 kg should be marked as an outlier, while a 2 kg laptop should not.
+To determine the performance of the used approach I have had a look at the common metrics for binary 
+classifications (outlier vs. non-outlier), i.e. accuracy, precision, 
+recall and F1-score. Because the available data was unlabeled I created some test data with labels and compared the
+expected results with the results of the model. Note, as each category and each attribute has its own model and thus
+needs its own data, I did the evaluation only for a subset of them.\
+Results are presented further down in section "Model Evaluation and Validation".
 
 ## Data Exploration & Data Visualization
 ### Dataset
@@ -182,29 +182,35 @@ one-dimensional data the Kernel Density Estimation was a better fit. So after re
 clustering approaches I relatively fast switched to read myself into the topic of KDE.
 
 ## Model Evaluation and Validation
-As explained in the Models Section, for this project I did not use any objective metrics to evaluate
-the model but decided to go with a manual, domain knowledge based approach.
-
 During the data analysis part I have looked at the plotted data for some attributes. The following shows the 
 weight for laptops above the mean (for better visual representation). As can be seen, the outliers (red) are all values 
 with higher values, so the model generally seems to work as expected.
 
 ![laptops_high_weight](./src/assets/laptop_plot_high.png)
 
-Additionally, by inputting values into the models, i.e. the PDFs for each product attribute, one can get a good feeling
-for how well the models work. Based on domain knowledge, e.g. a common laptop does not weight more than a few kilograms,
-an evaluation can be done.\
-Note, that the thresholds for deciding what values are considered as outliers is somewhat arbitrary. For the sake for
-simplicity in this project, I have taken the 1% percentile.
-
+For a more thorough evaluation of the model performance I have had a look at the metrics accuracy, precision, 
+recall and F1-score.\
 An important factor in KDE that influences how the PDF is calculated, is a parameter called `bandwidth`. See 
-[this link](https://aakinshin.net/posts/kde-bw/) for a good explanation of this parameter.
-During the data analysis phase I have mostly used the
-[KernelDensity](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KernelDensity.html) module of sklearn.
-Changing the `bandwidth` parameter has some effect on the outcome but since every attribute, for each product category, 
-needs a potentially different value I have decided to use the 
-[gaussian_kde class](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html) of the scipy
-package. This class includes automatic bandwidth selection algorithms, like Silverman's rule of thumb.
+[this link](https://aakinshin.net/posts/kde-bw/) for a good explanation of this parameter.\
+Another factor is the threshold which is chosen to divide outliers from non-outliers. Those two factors mainly 
+determine a models performance.\
+As can bee seen in the table below, different category-attribute combinations perform better on different 
+combinations of bandwidth and threshold. This is not surprising, as every attribute has its own value distribution.
+For the sake of simplicity in the scope of this project, I have chosen the same threshold for all models, 0.01. 
+This means that the 1%-percentile for each attribute is used as a limit value to decide if a value is considered as 
+an outlier or not.\
+The second parameter, bandwidth, can be calculated dynamically with the help of a bandwidth selection algorithm, e.g. 
+[Silverman's rule of thumb](https://archive.org/details/densityestimatio00silv_0/page/44/mode/2up). This 
+algorithm is available in the [gaussian_kde class](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html) of the scipy
+package, used in this project. So every category-attribute combination gets potentially a different bandwidth 
+parameter.
+
+Overall, we can see that the models perform very well on the test data. The finally chosen parameter combination in 
+the web application is as follows:
+- Bandwidth: Silverman's rule of thumb
+- Threshold: 0.01
+
+![Metric Evaluation](./src/assets/kde_metrics.png)
 
 ## Justification
 Since it was quite early clear that a clustering approach, which is commonly used for multidimensional
