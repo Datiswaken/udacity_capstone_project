@@ -196,7 +196,8 @@ Another factor is the threshold which is chosen to divide outliers from non-outl
 determine a models performance.\
 As can bee seen in the table below, different category-attribute combinations perform better on different 
 combinations of bandwidth and threshold. This is not surprising, as every attribute has its own value distribution.
-For the sake of simplicity in the scope of this project, I have chosen the same threshold for all models, 0.01. 
+For the sake of simplicity in the scope of this project, I have chosen the same threshold for all models, 0.01,
+in the web application. 
 This means that the 1%-percentile for each attribute is used as a limit value to decide if a value is considered as 
 an outlier or not.\
 The second parameter, bandwidth, can be calculated dynamically with the help of a bandwidth selection algorithm, e.g. 
@@ -204,6 +205,12 @@ The second parameter, bandwidth, can be calculated dynamically with the help of 
 algorithm is available in the [gaussian_kde class](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html) of the scipy
 package, used in this project. So every category-attribute combination gets potentially a different bandwidth 
 parameter.
+
+For evaluating the different models I have used the following values for the bandwidth and threshold
+parameters:
+- Bandwidth: 0.5, 1.0, 5.0, Silverman's rule of thumb
+- Threshold: 0.01, 0.05
+
 
 Overall, we can see that the models perform very well on the test data. The finally chosen parameter combination in 
 the web application is as follows:
